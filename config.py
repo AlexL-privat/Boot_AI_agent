@@ -1,0 +1,2 @@
+# config.py
+FILE_CHARACTER_LIMIT = 10000
