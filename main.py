@@ -1,8 +1,14 @@
 import os
+import sys
+
 from dotenv import load_dotenv
 from google import genai
 from google.genai import Client, types
-import sys
+from config import *
+
+# Import the function schema
+from functions.get_files_info import schema_get_files_info
+
 
 # Load environment variables from file
 load_dotenv("gemini.env")
@@ -35,15 +41,26 @@ def main(argv):
     prompt_tokens = 0
     response_tokens = 0
 
+
+    # Define the available functions for the AI to use
+    available_functions = types.Tool(
+    function_declarations=[
+        schema_get_files_info,
+    ]
+    )
+
     # Prepare the message structure for the API
     messages = [
     types.Content(role="user", parts=[types.Part(text=user_prompt)]),
     ]
 
-    # Generate a response using Gemini
+    # Generate a response using GeminiS
     response = client.models.generate_content(
-    model="gemini-2.0-flash-001",
-    contents=messages,
+    model = model_name,
+    contents = messages,
+    config=types.GenerateContentConfig(
+        tools=[available_functions],system_instruction=system_prompt
+        )
     )
 
     # Get token usage (if available)
@@ -57,8 +74,12 @@ def main(argv):
         print(f"Response tokens: {response_tokens}")
 
     # Print the generated response
-    print(response.text)
-    
+
+    if not response.function_calls:
+        return response.text
+
+    for function_call_part in response.function_calls:
+        print(f"Calling function: {function_call_part.name}({function_call_part.args})")
 
 if __name__ == "__main__":
     main(sys.argv[1:])
