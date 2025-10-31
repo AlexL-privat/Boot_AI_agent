@@ -1,6 +1,7 @@
 import os
 import subprocess
 import sys
+from google.genai import types
 
 def run_python_file(working_directory, file_path, args=[]):
     """
@@ -63,3 +64,26 @@ def run_python_file(working_directory, file_path, args=[]):
 
     except Exception as e:
         return f"Error: executing Python file: {e}"
+    
+
+# Define the function schema for AI integration
+schema_run_python_file = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Executes a python file, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the python file that is executed, relative to the working directory. If path is invalid or it's not a python fiel an error is returned.",
+            ),
+            "args": types.Schema(
+                type=types.Type.ARRAY,
+                items=types.Schema(
+                    type=types.Type.STRING,
+                ),
+                description="A list of command-line arguments to pass to the python script.",
+            ),
+        },
+    ),
+)

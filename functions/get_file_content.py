@@ -1,4 +1,5 @@
 import os
+from google.genai import types
 from config import *
 
 def get_file_content(working_directory, file_path):
@@ -40,3 +41,19 @@ def get_file_content(working_directory, file_path):
     except Exception as e:
         # Catch any other unexpected errors
         return f'Error: {e}'
+
+    
+# Define the function schema for AI integration
+schema_get_file_content = types.FunctionDeclaration(
+    name="get_file_content",
+    description="Returns content of a file as string up to a preconfigured character limit, constrained to the working directory.",
+    parameters=types.Schema(
+        type=types.Type.OBJECT,
+        properties={
+            "file_path": types.Schema(
+                type=types.Type.STRING,
+                description="The path to the file whose content is returned, relative to the working directory. If path is invalid or the file is to accessible an error is returned.",
+            ),
+        },
+    ),
+)
