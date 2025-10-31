@@ -68,7 +68,7 @@ def run_python_file(working_directory, file_path, args=[]):
 
 # Define the function schema for AI integration
 schema_run_python_file = types.FunctionDeclaration(
-    name="get_file_content",
+    name="run_python_file",
     description="Executes a python file, constrained to the working directory.",
     parameters=types.Schema(
         type=types.Type.OBJECT,
